@@ -1,0 +1,39 @@
+[project]
+name = "pyKRC"
+version = "0.1.0"
+authors = [
+    { name = "Marcus Zuber", email = "marcus.zuber@posteo.de" }
+]
+description = "A small rest API client to access kitten space agency."
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent"
+]
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "requests>=2.0.0,<3",
+    "tomli; python_version < \"3.11\""
+]
+
+
+[project.urls]
+Homepage = "https://github.com/MarcusZuber/pyKRC"
+Repository = "https://github.com/MarcusZuber/pyKRC"
+"Bug Tracker" = "https://github.com/MarcusZuber/pyKRC/issues"
+
+[project.scripts]
+pykrc = "pykrc.cli:main"
+pyKRC_info = "pyKRC.pyKRC_info:main"
+
+[build-system]
+requires = ["setuptools>=51.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
