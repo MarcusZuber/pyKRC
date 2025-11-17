@@ -14,7 +14,7 @@ def build_info() -> dict:
 
 def build_telemetry_info(address: str, port: int) -> dict:
     telemetry = Telemetry(address=address, port=port)
-    return {"altitude": telemetry.altitude}
+    return {"altitude": telemetry.altitude, "apoapsis": telemetry.apoapsis, "periapsis": telemetry.periapsis}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -34,6 +34,8 @@ def main(argv: list[str] | None = None) -> int:
         telemetry = build_telemetry_info(args.address, args.port)
         print("Telemetry")
         print(f"  Altitude: {telemetry['altitude']} m")
+        print(f"  Apoapsis: {telemetry['apoapsis']} m")
+        print(f"  Periapsis: {telemetry['periapsis']} m")
     except requests.exceptions.ConnectionError:
         print("ERROR: Could not connect to the KSA server")
 
