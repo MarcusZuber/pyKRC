@@ -105,6 +105,38 @@ class Control(Connection):
         """
         self._set("/control/flightComputer/stabilization", {"stabilization": enabled})
 
+    def get_thrusters(self) -> dict:
+        """
+        Get current thruster command flags.
+        :return: Dict mapping thruster enum names to booleans.
+        """
+        data = self._get("/control/thrusters")
+        # The API may return { "thrusters": { ... } } or the mapping directly.
+        if isinstance(data, dict) and "thrusters" in data and isinstance(data["thrusters"], dict):
+            return data["thrusters"]
+        if isinstance(data, dict):
+            # assume data itself is the mapping
+            return data
+        return {}
+
+    def set_thrusters(self, thrusters: dict) -> dict:
+        """
+        Batch-set thruster command flags (partial update supported by server).
+        :param thrusters: Mapping of thruster names to boolean/number/string values.
+        :return: Updated thruster mapping as returned by the server.
+        """
+        payload = thrusters
+        # If user passed a dict that isn't wrapped, wrap under 'thrusters' to match one of the accepted shapes
+        if "thrusters" not in payload:
+            payload = {"thrusters": thrusters}
+        # Use POST for batch thruster updates per OpenAPI
+        response = self._post("/control/thrusters", payload)
+        if isinstance(response, dict) and "thrusters" in response:
+            return response["thrusters"]
+        if isinstance(response, dict):
+            return response
+        return {}
+
     @property
     def sas(self):
         """

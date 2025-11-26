@@ -32,7 +32,7 @@ class Connection:
 
     def _set(self, endpoint: str, value: str | dict) -> dict:
         """
-        Sends data to the KSA server at the specified endpoint.
+        Sends data to the KSA server at the specified endpoint using PUT.
         :param endpoint: Pfad, z.B. /control/throttle
         :param value: Wert, der gesetzt werden soll (als String für text/plain oder dict für JSON)
         :return: JSON response as dict
@@ -44,6 +44,32 @@ class Connection:
                 response = requests.put(f"{self.base_url}{endpoint}", json=value, timeout=5.0)
             else:
                 response = requests.put(
+                    f"{self.base_url}{endpoint}",
+                    data=str(value),
+                    headers={"Content-Type": "text/plain"},
+                    timeout=5.0
+                )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.ConnectionError:
+            raise requests.exceptions.ConnectionError(f"Could not connect to {self.address}:{self.port}")
+        except requests.exceptions.HTTPError as e:
+            error_msg = e.response.json().get("error", str(e)) if e.response else str(e)
+            raise RuntimeError(error_msg)
+
+    def _post(self, endpoint: str, value: str | dict) -> dict:
+        """
+        Sends data to the KSA server at the specified endpoint using POST.
+        Used for endpoints that expect POST (e.g. /control/thrusters).
+        :param endpoint: Pfad, z.B. /control/thrusters
+        :param value: Wert (dict -> JSON, else text/plain)
+        :return: JSON response as dict
+        """
+        try:
+            if isinstance(value, dict):
+                response = requests.post(f"{self.base_url}{endpoint}", json=value, timeout=5.0)
+            else:
+                response = requests.post(
                     f"{self.base_url}{endpoint}",
                     data=str(value),
                     headers={"Content-Type": "text/plain"},
